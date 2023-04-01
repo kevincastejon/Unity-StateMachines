@@ -6,24 +6,34 @@ using UnityEngine.Events;
 
 namespace SimpleAbstractStateMachine
 {
-    public abstract class AbstractState<T> where T : struct, IConvertible
+    public abstract class AbstractState<T0> where T0 : struct, IConvertible
     {
-        private UnityAction<T> _transitionToState;
+        private UnityAction<T0> _transitionToState;
         private UnityAction _exit;
+        private AbstractStateMachine<T0> _parentStateMachine;
 
-        protected UnityAction<T> TransitionToState { get => _transitionToState; }
+        protected AbstractState(AbstractStateMachine<T0> parentStateMachine)
+        {
+            _parentStateMachine = parentStateMachine;
+        }
+
+        protected UnityAction<T0> TransitionToState { get => _transitionToState; }
         protected UnityAction Exit { get => _exit; }
+        public AbstractStateMachine<T0> ParentStateMachine { get => _parentStateMachine; }
 
-        public void SetCallback(UnityAction<T> transitionToState, UnityAction exit)
+        public void SetCallback(UnityAction<T0> transitionToState, UnityAction exit)
         {
             _transitionToState = transitionToState;
             _exit = exit;
         }
-        public abstract void OnEnter();
 
-        public abstract void OnExit();
+        public virtual void OnEnter() { }
 
-        public abstract void OnUpdate();
+        public virtual void OnUpdate() { }
+
+        public virtual void OnFixedUpdate() { }
+
+        public virtual void OnExit() { }
     }
 
 
@@ -45,7 +55,14 @@ namespace SimpleAbstractStateMachine
         {
             if (OnAnyStateUpdate(CurrentState))
             {
-                _states[CurrentState].OnEnter();
+                _states[CurrentState].OnUpdate();
+            }
+        }
+        private void FixedUpdate()
+        {
+            if (OnAnyStateFixedUpdate(CurrentState))
+            {
+                _states[CurrentState].OnFixedUpdate();
             }
         }
         protected void ExitToParent()
@@ -60,9 +77,9 @@ namespace SimpleAbstractStateMachine
             }
 
             CurrentState = newState;
-            if (OnAnyStateEnter(newState))
+            if (OnAnyStateEnter(CurrentState))
             {
-                _states[newState].OnEnter();
+                _states[CurrentState].OnEnter();
             }
         }
 
@@ -71,6 +88,10 @@ namespace SimpleAbstractStateMachine
             return true;
         }
         protected virtual bool OnAnyStateUpdate(T state)
+        {
+            return true;
+        }
+        protected virtual bool OnAnyStateFixedUpdate(T state)
         {
             return true;
         }
