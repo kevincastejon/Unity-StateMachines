@@ -1,80 +1,93 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-namespace NestedAbstractStateMachine.BoardSM
+
+namespace NestedAbstractStateMachineGenericLess
 {
-    public enum BoardState
+    public class _BoardStateMachine : AbstractStateMachine
     {
-        SWITCHING_PLAYER,
-        PLAYING,
-        CHECKING,
-    }
-    public class BoardStateMachine : NestedAbstractStateMachine
-    {
-        public BoardStateMachine()
+        public enum BoardState
         {
-            SetStates(new Dictionary<int, AbstractState>() {
-                { (int)BoardState.SWITCHING_PLAYER, new SwitchingPlayerState() },
-                { (int)BoardState.PLAYING, new PlayingState() },
-                { (int)BoardState.CHECKING, new CheckingState() },
-            });
+            WAITING,
+            CHECKING,
+        }
+        public _BoardStateMachine(AbstractStateMachine parentStateMachine)
+        {
+            Init(parentStateMachine, BoardState.WAITING, new WaitingState(this), new CheckingState(this));
         }
 
-        protected override void ExitFromSubStateMachine(int subStateMachine)
+        public override void OnExitFromSubStateMachine(AbstractStateMachine subStateMachine)
         {
-
+            
         }
-    }
-    public class SwitchingPlayerState : AbstractState
-    {
-        public override void OnEnter()
+        public class WaitingState : IAbstractState
         {
+            private _BoardStateMachine StateMachine { get; set; }
+            private void TransitionToState(BoardState state) { StateMachine.TransitionToState(state); }
+            public WaitingState(_BoardStateMachine stateMachine)
+            {
+                StateMachine = stateMachine;
+            }
 
-        }
+            public void OnEnter()
+            {
 
-        public override void OnExit()
-        {
+            }
 
-        }
+            public void OnUpdate()
+            {
+                if (Input.anyKeyDown)
+                {
+                    TransitionToState(BoardState.CHECKING);
+                    return;
+                }
+            }
 
-        public override void OnUpdate()
-        {
+            public void OnFixedUpdate()
+            {
 
-        }
-    }
-    public class PlayingState : AbstractState
-    {
+            }
 
-        public override void OnEnter()
-        {
+            public void OnExit()
+            {
 
-        }
-
-        public override void OnExit()
-        {
-
-        }
-
-        public override void OnUpdate()
-        {
-
-        }
-    }
-    public class CheckingState : AbstractState
-    {
-        public override void OnEnter()
-        {
-
+            }
         }
 
-        public override void OnExit()
+
+        public class CheckingState : IAbstractState
         {
+            private _BoardStateMachine StateMachine { get; set; }
+            private void TransitionToState(BoardState state) { StateMachine.TransitionToState(state); }
+            public CheckingState(_BoardStateMachine stateMachine)
+            {
+                StateMachine = stateMachine;
+            }
+            public void OnEnter()
+            {
 
+            }
+
+            public void OnUpdate()
+            {
+                if (Input.anyKeyDown)
+                {
+                    StateMachine.TransitionToState(-1);
+                    return;
+                }
+            }
+
+            public void OnFixedUpdate()
+            {
+
+            }
+
+            public void OnExit()
+            {
+
+            }
         }
+       
 
-        public override void OnUpdate()
-        {
-
-        }
     }
 }
