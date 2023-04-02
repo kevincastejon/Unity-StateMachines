@@ -4,37 +4,37 @@ using UnityEngine;
 
 namespace NestedAbstractStateMachineGenericLess
 {
-    public class _BoardStateMachine : AbstractStateMachine
+    public class BoardStateMachine : AbstractStateMachine
     {
         public enum BoardState
         {
             WAITING,
             CHECKING,
         }
-        public _BoardStateMachine(AbstractStateMachine parentStateMachine)
+        public BoardStateMachine(string name, AbstractStateMachine parentStateMachine) : base(name)
         {
-            Init(parentStateMachine, BoardState.WAITING, new WaitingState(this), new CheckingState(this));
+            Init(parentStateMachine, BoardState.WAITING, new WaitingState(BoardState.WAITING.ToString(), this), new CheckingState(BoardState.CHECKING.ToString(), this));
         }
 
         public override void OnExitFromSubStateMachine(AbstractStateMachine subStateMachine)
         {
             
         }
-        public class WaitingState : IAbstractState
+        public class WaitingState : AbstractState
         {
-            private _BoardStateMachine StateMachine { get; set; }
+            private BoardStateMachine StateMachine { get; set; }
             private void TransitionToState(BoardState state) { StateMachine.TransitionToState(state); }
-            public WaitingState(_BoardStateMachine stateMachine)
+            public WaitingState(string name, BoardStateMachine stateMachine):base(name)
             {
                 StateMachine = stateMachine;
             }
 
-            public void OnEnter()
+            public override void OnEnter()
             {
 
             }
 
-            public void OnUpdate()
+            public override void OnUpdate()
             {
                 if (Input.anyKeyDown)
                 {
@@ -43,32 +43,32 @@ namespace NestedAbstractStateMachineGenericLess
                 }
             }
 
-            public void OnFixedUpdate()
+            public override void OnFixedUpdate()
             {
 
             }
 
-            public void OnExit()
+            public override void OnExit()
             {
 
             }
         }
 
 
-        public class CheckingState : IAbstractState
+        public class CheckingState : AbstractState
         {
-            private _BoardStateMachine StateMachine { get; set; }
+            private BoardStateMachine StateMachine { get; set; }
             private void TransitionToState(BoardState state) { StateMachine.TransitionToState(state); }
-            public CheckingState(_BoardStateMachine stateMachine)
+            public CheckingState(string name, BoardStateMachine stateMachine) : base(name)
             {
                 StateMachine = stateMachine;
             }
-            public void OnEnter()
+            public override void OnEnter()
             {
 
             }
 
-            public void OnUpdate()
+            public override void OnUpdate()
             {
                 if (Input.anyKeyDown)
                 {
@@ -77,12 +77,12 @@ namespace NestedAbstractStateMachineGenericLess
                 }
             }
 
-            public void OnFixedUpdate()
+            public override void OnFixedUpdate()
             {
 
             }
 
-            public void OnExit()
+            public override void OnExit()
             {
 
             }

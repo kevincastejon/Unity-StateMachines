@@ -4,72 +4,142 @@ using UnityEngine;
 
 namespace NestedAbstractStateMachineGenericLess
 {
-    public interface IAbstractState
+    public abstract class AbstractState
     {
-        public void OnEnter();
+        private string _name;
 
-        public void OnUpdate();
+        public string Name { get => _name; set => _name = value; }
 
-        public void OnFixedUpdate();
+        public AbstractState(string name)
+        {
+            _name = name;
+        }
+        public abstract void OnEnter();
 
-        public void OnExit();
+        public abstract void OnUpdate();
+
+        public abstract void OnFixedUpdate();
+
+        public abstract void OnExit();
     }
 
 
 
-    public abstract class AbstractStateMachine : IAbstractState
+    public abstract class AbstractStateMachine : AbstractState
     {
         private AbstractStateMachine _parentStateMachine;
-        private IAbstractState[] _states;
+        private AbstractState[] _states;
         private int _defaultState;
         private int _currentState = -1;
 
-        public void Init<T>(AbstractStateMachine parentStateMachine, T defaultStateIndex, params IAbstractState[] states) where T : struct, System.IConvertible
+        protected AbstractStateMachine(string name) : base(name)
+        {
+
+        }
+
+        public void Init<T>(T defaultStateIndex, params AbstractState[] states) where T : System.Enum
+        {
+            Init(null, defaultStateIndex, states);
+        }
+        public void Init<T>(AbstractStateMachine parentStateMachine, T defaultStateIndex, params AbstractState[] states) where T : System.Enum
         {
             _parentStateMachine = parentStateMachine;
             _states = states;
             _defaultState = (int)(object)defaultStateIndex;
         }
-        public T GetCurrentStateIndex<T>() where T : struct, System.IConvertible
+        public T GetCurrentState<T>() where T : AbstractState
+        {
+            return (T)_states[_currentState];
+        }
+        public int GetCurrentStateEnumIndex()
+        {
+            return _currentState;
+        }
+        public T GetCurrentStateEnumValue<T>() where T : System.Enum
         {
             return (T)(object)_currentState;
         }
-        public T[] GetCurrentHierarchicalStates<T>() where T : IAbstractState
+        public string GetCurrentStateName()
+        {
+            return _states[_currentState].Name;
+        }
+        public T[] GetCurrentHierarchicalStates<T>() where T : AbstractState
         {
             List<T> indexes = new List<T>();
-            IAbstractState state = _states[_currentState];
+            AbstractState state = _states[_currentState];
             indexes.Add((T)state);
             while (state is AbstractStateMachine machine)
             {
-                state = machine.GetCurrentState<IAbstractState>();
+                state = machine.GetCurrentState<AbstractState>();
                 indexes.Add((T)state);
             }
             return indexes.ToArray();
         }
-        public T GetCurrentState<T>() where T : IAbstractState
+        public int[] GetCurrentHierarchicalStatesIndexes()
         {
-            return (T)_states[_currentState];
+            List<int> indexes = new List<int>();
+            AbstractState state = _states[_currentState];
+            indexes.Add(_currentState);
+            while (state is AbstractStateMachine machine)
+            {
+                state = machine.GetCurrentState<AbstractState>();
+                indexes.Add(machine.GetCurrentStateEnumIndex());
+            }
+            return indexes.ToArray();
         }
-        public void OnEnter()
+        public string[] GetCurrentHierarchicalStatesNames()
+        {
+            List<string> names = new List<string>();
+            AbstractState state = _states[_currentState];
+            names.Add(state.Name);
+            while (state is AbstractStateMachine machine)
+            {
+                state = machine.GetCurrentState<AbstractState>();
+                names.Add(state.Name);
+            }
+            return names.ToArray();
+        }
+        public string GetCurrentHierarchicalStatesNamesString(string separator = " > ")
+        {
+            string str = "";
+            AbstractState state = _states[_currentState];
+            str += state.Name;
+            if (state is AbstractStateMachine)
+            {
+                str += separator;
+            }
+            while (state is AbstractStateMachine machine)
+            {
+                state = machine.GetCurrentState<AbstractState>();
+                str += state.Name;
+                if (state is AbstractStateMachine)
+                {
+                    str += separator;
+                }
+            }
+            return str;
+        }
+
+        public override void OnEnter()
         {
             TransitionToState(_defaultState);
         }
 
-        public void OnUpdate()
+        public override void OnUpdate()
         {
             if (OnAnyStateUpdate(_states[_currentState]))
             {
                 _states[_currentState].OnUpdate();
             }
         }
-        public void OnFixedUpdate()
+        public override void OnFixedUpdate()
         {
             if (OnAnyStateFixedUpdate(_states[_currentState]))
             {
                 _states[_currentState].OnFixedUpdate();
             }
         }
-        public void OnExit()
+        public override void OnExit()
         {
 
         }
@@ -98,19 +168,19 @@ namespace NestedAbstractStateMachineGenericLess
             }
         }
 
-        protected virtual bool OnAnyStateEnter(IAbstractState state)
+        protected virtual bool OnAnyStateEnter(AbstractState state)
         {
             return true;
         }
-        protected virtual bool OnAnyStateUpdate(IAbstractState state)
+        protected virtual bool OnAnyStateUpdate(AbstractState state)
         {
             return true;
         }
-        protected virtual bool OnAnyStateFixedUpdate(IAbstractState state)
+        protected virtual bool OnAnyStateFixedUpdate(AbstractState state)
         {
             return true;
         }
-        protected virtual bool OnAnyStateExit(IAbstractState state)
+        protected virtual bool OnAnyStateExit(AbstractState state)
         {
             return true;
         }

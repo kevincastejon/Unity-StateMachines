@@ -1,45 +1,22 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace NestedAbstractStateMachineGenericLess
 {
-    public class GameStateMachine : MonoBehaviour
+    public class GameStateMachine : AbstractStateMachine
     {
-        private _GameStateMachine _sm;
-
-        private void Awake()
+        public enum GameState
         {
-            _sm = new _GameStateMachine();
+            SWITCHING_ROUND,
+            PLAYING,
+            END
         }
-
-        private void Start()
+        public GameStateMachine() : base("GameStateMachine")
         {
-            _sm.OnEnter();
-        }
-        private void Update()
-        {
-            _sm.OnUpdate();
-        }
-        private void FixedUpdate()
-        {
-            _sm.OnFixedUpdate();            
-        }
-        private void OnGUI()
-        {
-            // On affiche l'état en cours pour le debug
-            GUIStyle style = new GUIStyle() { fontSize = 50, fontStyle = FontStyle.Bold };
-            style.normal.textColor = Color.white;
-            style.fontSize = 10;
-            GUI.Label(new Rect(50, 50, 100, 100), string.Join(',', _sm.GetCurrentHierarchicalStates<IAbstractState>().Select(s => s.ToString()).ToArray()), style);
-        }
-    }
-    public class _GameStateMachine : AbstractStateMachine
-    {
-        public _GameStateMachine()
-        {
-            Init(null, GameState.SWITCHING_ROUND, new SwitchingRoundState(this), new _BoardStateMachine(this), new EndState(this));
+            Init(GameState.SWITCHING_ROUND, 
+                new SwitchingRoundState(GameState.SWITCHING_ROUND.ToString(), this), 
+                new BoardStateMachine(GameState.PLAYING.ToString(), this), 
+                new EndState(GameState.END.ToString(), this)
+            );
         }
 
         public override void OnExitFromSubStateMachine(AbstractStateMachine subStateMachine)
@@ -47,28 +24,21 @@ namespace NestedAbstractStateMachineGenericLess
             TransitionToState(GameState.END);
         }
 
-        public enum GameState
+        public class SwitchingRoundState : AbstractState
         {
-            SWITCHING_ROUND,
-            PLAYING,
-            END
-        }
-        
-        public class SwitchingRoundState : IAbstractState
-        {
-            private _GameStateMachine StateMachine { get; set; }
+            private GameStateMachine StateMachine { get; set; }
             private void TransitionToState(GameState state) { StateMachine.TransitionToState(state); }
-            public SwitchingRoundState(_GameStateMachine stateMachine)
+            public SwitchingRoundState(string name, GameStateMachine stateMachine) : base(name)
             {
                 StateMachine = stateMachine;
             }
 
-            public void OnEnter()
+            public override void OnEnter()
             {
 
             }
 
-            public void OnUpdate()
+            public override void OnUpdate()
             {
                 if (Input.anyKeyDown)
                 {
@@ -77,64 +47,31 @@ namespace NestedAbstractStateMachineGenericLess
                 }
             }
 
-            public void OnFixedUpdate()
+            public override void OnFixedUpdate()
             {
 
             }
 
-            public void OnExit()
+            public override void OnExit()
             {
 
             }
         }
 
-
-        //public class PlayingState : IAbstractState
-        //{
-        //    private _GameStateMachine StateMachine { get; set; }
-        //    private void TransitionToState(GameState state) { StateMachine.TransitionToState(state); }
-        //    public PlayingState(_GameStateMachine stateMachine)
-        //    {
-        //        StateMachine = stateMachine;
-        //    }
-        //    public void OnEnter()
-        //    {
-
-        //    }
-
-        //    public void OnUpdate()
-        //    {
-        //        if (Input.anyKeyDown)
-        //        {
-        //            TransitionToState(GameState.END);
-        //            return;
-        //        }
-        //    }
-
-        //    public void OnFixedUpdate()
-        //    {
-
-        //    }
-
-        //    public void OnExit()
-        //    {
-
-        //    }
-        //}
-        public class EndState : IAbstractState
+        public class EndState : AbstractState
         {
-            private _GameStateMachine StateMachine { get; set; }
+            private GameStateMachine StateMachine { get; set; }
             private void TransitionToState(GameState state) { StateMachine.TransitionToState(state); }
-            public EndState(_GameStateMachine stateMachine)
+            public EndState(string name, GameStateMachine stateMachine) : base(name)
             {
                 StateMachine = stateMachine;
             }
-            public void OnEnter()
+            public override void OnEnter()
             {
 
             }
 
-            public void OnUpdate()
+            public override void OnUpdate()
             {
                 if (Input.anyKeyDown)
                 {
@@ -143,12 +80,12 @@ namespace NestedAbstractStateMachineGenericLess
                 }
             }
 
-            public void OnFixedUpdate()
+            public override void OnFixedUpdate()
             {
 
             }
 
-            public void OnExit()
+            public override void OnExit()
             {
 
             }
