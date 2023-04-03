@@ -4,90 +4,80 @@ namespace NestedAbstractStateMachineGenericLess
 {
     public class GameStateMachine : AbstractStateMachine
     {
+        public GameManager Manager { get; set; }
         public enum GameState
         {
-            SWITCHING_ROUND,
-            PLAYING,
+            MENU,
+            GAME,
             END
         }
-        public GameStateMachine() : base("GameStateMachine")
+        public GameStateMachine()
         {
-            Init(GameState.SWITCHING_ROUND, 
-                new SwitchingRoundState(GameState.SWITCHING_ROUND.ToString(), this), 
-                new BoardStateMachine(GameState.PLAYING.ToString(), this), 
-                new EndState(GameState.END.ToString(), this)
+            Init(GameState.MENU,
+                Create<MenuState, GameState>(GameState.MENU, this),
+                Create<BoardStateMachine, GameState>(GameState.GAME, this),
+                Create<EndState, GameState>(GameState.END, this)
             );
+            Manager = Object.FindObjectOfType<GameManager>();
         }
 
         public override void OnExitFromSubStateMachine(AbstractStateMachine subStateMachine)
         {
             TransitionToState(GameState.END);
         }
-
-        public class SwitchingRoundState : AbstractState
+        
+        public class MenuState : AbstractState
         {
-            private GameStateMachine StateMachine { get; set; }
-            private void TransitionToState(GameState state) { StateMachine.TransitionToState(state); }
-            public SwitchingRoundState(string name, GameStateMachine stateMachine) : base(name)
-            {
-                StateMachine = stateMachine;
-            }
 
             public override void OnEnter()
             {
-
+                GetStateMachine<GameStateMachine>().Manager.ResetGame();
+                GetStateMachine<GameStateMachine>().Manager.ShowStartPanel();
             }
 
             public override void OnUpdate()
             {
-                if (Input.anyKeyDown)
+                if (Input.GetKeyDown(KeyCode.Return))
                 {
-                    TransitionToState(GameState.PLAYING);
+                    GetStateMachine<GameStateMachine>().TransitionToState(GameState.GAME);
                     return;
                 }
             }
 
-            public override void OnFixedUpdate()
-            {
-
-            }
-
             public override void OnExit()
             {
-
+                GetStateMachine<GameStateMachine>().Manager.HideStartPanel();
             }
         }
 
         public class EndState : AbstractState
         {
-            private GameStateMachine StateMachine { get; set; }
-            private void TransitionToState(GameState state) { StateMachine.TransitionToState(state); }
-            public EndState(string name, GameStateMachine stateMachine) : base(name)
-            {
-                StateMachine = stateMachine;
-            }
             public override void OnEnter()
             {
-
+                GetStateMachine<GameStateMachine>().Manager.HideCurrentPlayerPanel();
+                GetStateMachine<GameStateMachine>().Manager.ShowBackPanel();
+                if (GetStateMachine<GameStateMachine>().Manager.IsWinner)
+                {
+                    GetStateMachine<GameStateMachine>().Manager.ShowVictory();
+                }
+                else
+                {
+                    GetStateMachine<GameStateMachine>().Manager.ShowDraw();
+                }
             }
 
             public override void OnUpdate()
             {
-                if (Input.anyKeyDown)
+                if (Input.GetKeyDown(KeyCode.Return))
                 {
-                    TransitionToState(GameState.SWITCHING_ROUND);
+                    GetStateMachine<GameStateMachine>().TransitionToState(GameState.MENU);
                     return;
                 }
             }
 
-            public override void OnFixedUpdate()
-            {
-
-            }
-
             public override void OnExit()
             {
-
+                GetStateMachine<GameStateMachine>().Manager.HideBackPanel();
             }
         }
     }
