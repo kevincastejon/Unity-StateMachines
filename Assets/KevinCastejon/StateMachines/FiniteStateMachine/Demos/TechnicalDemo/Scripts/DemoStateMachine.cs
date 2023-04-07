@@ -4,77 +4,77 @@ using UnityEngine;
 using KevinCastejon.FiniteStateMachine;
 namespace KevinCastejon.FiniteStateMachineDemos.TechnicalDemo
 {
-public class DemoStateMachine : AbstractFiniteStateMachine
-{
-    private DisplayManager DisplayManager { get; set; }
-    public enum DemoState
+    public class DemoStateMachine : AbstractFiniteStateMachine
     {
-        A,
-        B,
-        C
-    }
-    private void Awake()
-    {
-        DisplayManager = FindObjectOfType<DisplayManager>();
-        Init(DemoState.A,
-            AbstractState.Create<AState, DemoState>(DemoState.A, this),
-            AbstractState.Create<BState, DemoState>(DemoState.B, this),
-            AbstractState.Create<CState, DemoState>(DemoState.C, this)
-        );
-    }
-    public class AState : AbstractState
-    {
-        public override void OnEnter()
+        private DisplayManager DisplayManager { get; set; }
+        public enum DemoState
         {
-            GetStateMachine<DemoStateMachine>().DisplayManager.EnableA();
+            A,
+            B,
+            C
         }
-        public override void OnUpdate()
+        private void Awake()
         {
-            if (Input.anyKeyDown)
+            DisplayManager = FindObjectOfType<DisplayManager>();
+            Init(DemoState.A,
+                AbstractState.Create<AState, DemoState>(DemoState.A, this),
+                AbstractState.Create<BState, DemoState>(DemoState.B, this),
+                AbstractState.Create<CState, DemoState>(DemoState.C, this)
+            );
+        }
+        public class AState : AbstractState
+        {
+            public override void OnEnter()
             {
-                TransitionToState(DemoState.B);
+                GetStateMachine<DemoStateMachine>().DisplayManager.EnableA();
+            }
+            public override void OnUpdate()
+            {
+                if (Input.anyKeyDown)
+                {
+                    TransitionToState(DemoState.B);
+                }
+            }
+            public override void OnExit()
+            {
+                GetStateMachine<DemoStateMachine>().DisplayManager.DisableA();
             }
         }
-        public override void OnExit()
+        public class BState : AbstractState
         {
-            GetStateMachine<DemoStateMachine>().DisplayManager.DisableA();
-        }
-    }
-    public class BState : AbstractState
-    {
-        public override void OnEnter()
-        {
-            GetStateMachine<DemoStateMachine>().DisplayManager.EnableB();
-        }
-        public override void OnUpdate()
-        {
-            if (Input.anyKeyDown)
+            public override void OnEnter()
             {
-                TransitionToState(DemoState.C);
+                GetStateMachine<DemoStateMachine>().DisplayManager.EnableB();
+            }
+            public override void OnUpdate()
+            {
+                if (Input.anyKeyDown)
+                {
+                    TransitionToState(DemoState.C);
+                }
+            }
+            public override void OnExit()
+            {
+                GetStateMachine<DemoStateMachine>().DisplayManager.DisableB();
             }
         }
-        public override void OnExit()
+        public class CState : AbstractState
         {
-            GetStateMachine<DemoStateMachine>().DisplayManager.DisableB();
-        }
-    }
-    public class CState : AbstractState
-    {
-        public override void OnEnter()
-        {
-            GetStateMachine<DemoStateMachine>().DisplayManager.EnableC();
-        }
-        public override void OnUpdate()
-        {
-            if (Input.anyKeyDown)
+            public override void OnEnter()
             {
-                TransitionToState(DemoState.A);
+                GetStateMachine<DemoStateMachine>().DisplayManager.EnableC();
+            }
+            public override void OnUpdate()
+            {
+                if (Input.anyKeyDown)
+                {
+                    TransitionToState(DemoState.A);
+                }
+            }
+            public override void OnExit()
+            {
+                GetStateMachine<DemoStateMachine>().DisplayManager.DisableC();
             }
         }
-        public override void OnExit()
-        {
-            GetStateMachine<DemoStateMachine>().DisplayManager.DisableC();
-        }
     }
-}
 }

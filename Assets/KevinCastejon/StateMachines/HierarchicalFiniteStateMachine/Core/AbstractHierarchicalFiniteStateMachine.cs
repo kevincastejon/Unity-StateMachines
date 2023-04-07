@@ -51,7 +51,7 @@ namespace KevinCastejon.HierarchicalFiniteStateMachine
             newState._parentStateMachine = parentStateMachine;
             return newState;
         }
-        protected static T0 Create<T0>(string name) where T0 : AbstractState, new()
+        protected internal static T0 Create<T0>(string name) where T0 : AbstractState, new()
         {
             T0 newState = new T0();
             newState._name = name;
@@ -120,11 +120,10 @@ namespace KevinCastejon.HierarchicalFiniteStateMachine
         /// <summary>
         /// Returns the current state
         /// </summary>
-        /// <typeparam name="T">The state type</typeparam>
         /// <returns>The current state</returns>
-        public T GetCurrentState<T>() where T : AbstractState
+        public AbstractState GetCurrentState()
         {
-            return (T)_states[_currentState];
+            return _states[_currentState];
         }
         /// <summary>
         /// Returns the current state enum index
@@ -162,7 +161,7 @@ namespace KevinCastejon.HierarchicalFiniteStateMachine
             indexes.Add(_currentState);
             while (state is AbstractHierarchicalFiniteStateMachine machine)
             {
-                state = machine.GetCurrentState<AbstractState>();
+                state = machine.GetCurrentState();
                 indexes.Add(machine.GetCurrentStateEnumIndex());
             }
             return indexes.ToArray();
@@ -178,7 +177,7 @@ namespace KevinCastejon.HierarchicalFiniteStateMachine
             names.Add(state.Name);
             while (state is AbstractHierarchicalFiniteStateMachine machine)
             {
-                state = machine.GetCurrentState<AbstractState>();
+                state = machine.GetCurrentState();
                 names.Add(state.Name);
             }
             return names.ToArray();
@@ -199,7 +198,7 @@ namespace KevinCastejon.HierarchicalFiniteStateMachine
             }
             while (state is AbstractHierarchicalFiniteStateMachine machine)
             {
-                state = machine.GetCurrentState<AbstractState>();
+                state = machine.GetCurrentState();
                 str += state.Name;
                 if (state is AbstractHierarchicalFiniteStateMachine)
                 {

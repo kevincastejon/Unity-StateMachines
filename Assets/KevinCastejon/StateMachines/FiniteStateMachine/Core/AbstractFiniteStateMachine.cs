@@ -132,11 +132,10 @@ namespace KevinCastejon.FiniteStateMachine
         /// <summary>
         /// Returns the current state
         /// </summary>
-        /// <typeparam name="T">The state type</typeparam>
         /// <returns>The current state</returns>
-        public T GetCurrentState<T>() where T : AbstractState
+        public AbstractState GetCurrentState()
         {
-            return (T)_states[_currentState];
+            return _states[_currentState];
         }
         /// <summary>
         /// Returns the current state enum index
