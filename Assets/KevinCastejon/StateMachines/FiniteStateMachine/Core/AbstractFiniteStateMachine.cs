@@ -51,6 +51,11 @@ namespace KevinCastejon.FiniteStateMachine
             newState._parentStateMachine = parentStateMachine;
             return newState;
         }
+        /// <summary>
+        /// Transition from the current state to another state
+        /// </summary>
+        /// <typeparam name="T">An enum value or index of the destination state</typeparam>
+        /// <param name="newStateEnum">The destination state</param>
         public void TransitionToState<T>(T newStateEnum) where T : struct, System.IConvertible
         {
             _parentStateMachine.TransitionToState<T>(newStateEnum);
