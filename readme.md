@@ -18,6 +18,7 @@ You can even save more time by using the scripts generator (**Window > FSM/HFSM 
 
 ### FSM
 Here is a simple example of a state machine with three states A, B and C.
+- **DemoStateMachine.cs**
 ```cs
 public class DemoStateMachine : AbstractFiniteStateMachine
 {
@@ -103,7 +104,7 @@ public override void OnFixedUpdate()
 
 ### HFSM
 Here is a simple example of a state machine with three states A, B and C, with the B state being also a nested state machine with its own states (SUB_A, SUB_B and SUB_C)
-- MainStateMachine.cs
+- **MainStateMachine.cs**
 ```cs
 public class MainStateMachine : AbstractHierarchicalFiniteStateMachine
 {
@@ -165,7 +166,7 @@ public class MainStateMachine : AbstractHierarchicalFiniteStateMachine
     }
 }
 ```
-- BStateMachine.cs
+- **BStateMachine.cs**
 ```cs
 public class BStateMachine : AbstractHierarchicalFiniteStateMachine
 {
@@ -246,7 +247,7 @@ The nested state machines do not inherit from MonoBehaviour, you cannot drop the
 
 Here is an example of wrapper component for the above example.
 
-- MainStateMachineComponent.cs
+- **MainStateMachineComponent.cs**
 ```cs
 public class MainStateMachineComponent : MonoBehaviour
     {
