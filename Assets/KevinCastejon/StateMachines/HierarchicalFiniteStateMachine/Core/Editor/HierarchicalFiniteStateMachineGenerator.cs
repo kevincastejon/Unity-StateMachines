@@ -376,6 +376,15 @@ namespace KevinCastejon.HierarchicalFiniteStateMachine.Generator
                     WriteLine($"    {{", _useNamespace, outfile);
                     WriteLine($"    }}", _useNamespace, outfile);
                 }
+                if (stateMachine.IsSubStateMachine)
+                {
+                    WriteLine($"    public override void OnStateMachineEntry()", _useNamespace, outfile);
+                    WriteLine($"    {{", _useNamespace, outfile);
+                    WriteLine($"    }}", _useNamespace, outfile);
+                    WriteLine($"    public override void OnStateMachineExit()", _useNamespace, outfile);
+                    WriteLine($"    {{", _useNamespace, outfile);
+                    WriteLine($"    }}", _useNamespace, outfile);
+                }
                 for (int i = 0; i < stateMachine.States.Count; i++)
                 {
                     if (stateMachine.States[i].IsSubStateMachine)
