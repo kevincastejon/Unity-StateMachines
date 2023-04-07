@@ -5,7 +5,6 @@ using System.IO;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
-using UnityEngine.Events;
 
 namespace KevinCastejon.HierarchicalFiniteStateMachine.Generator
 {
@@ -71,14 +70,7 @@ namespace KevinCastejon.HierarchicalFiniteStateMachine.Generator
                     _isSubStateMachine = value;
                     if (_isSubStateMachine)
                     {
-                        if (HierarchicalFiniteStateMachineGenerator._root == null)
-                        {
-                            _states = new List<StateMachineData>() { new StateMachineData("STATE_A"), new StateMachineData("STATE_B") };
-                        }
-                        else
-                        {
-                            _states = new List<StateMachineData>() { new StateMachineData(HierarchicalFiniteStateMachineGenerator.MakeNameUnique("STATE_A")), new StateMachineData(HierarchicalFiniteStateMachineGenerator.MakeNameUnique("STATE_B")) };
-                        }
+                        _states = new List<StateMachineData>() { new StateMachineData("STATE_A"), new StateMachineData("STATE_B") }; 
                         InitializeList();
                     }
                     else
@@ -196,7 +188,7 @@ namespace KevinCastejon.HierarchicalFiniteStateMachine.Generator
         private void OnAddCallback(ReorderableList list)
         {
             int index = list.count == 0 ? 0 : list.index + 1;
-            _states.Insert(index, new StateMachineData(HierarchicalFiniteStateMachineGenerator.MakeNameUnique("NEW_STATE")));
+            _states.Insert(index, new StateMachineData(HierarchicalFiniteStateMachineGenerator.MakeNameUnique("NEW_STATE", this)));
             list.Select(index);
         }
 
@@ -217,17 +209,17 @@ namespace KevinCastejon.HierarchicalFiniteStateMachine.Generator
             window.minSize = new Vector2(550, 450);
             window.titleContent = new GUIContent("HFSM Generator");
         }
-        public static string MakeNameUnique(string newName, bool treatRoot = true)
+        public static string MakeNameUnique(string newName, StateMachineData sm, bool treatRoot = true)
         {
-            while (!IsNameUnique(newName, treatRoot))
+            while (!IsNameUnique(newName, sm, treatRoot))
             {
                 newName += "_";
             }
             return newName;
         }
-        private static bool IsNameUnique(string newName, bool treatRoot = true)
+        private static bool IsNameUnique(string newName, StateMachineData sm, bool treatRoot = true)
         {
-            return !_root.IsNameExisting(newName, treatRoot);
+            return !sm.IsNameExisting(newName, treatRoot);
         }
         private void OnEnable()
         {
@@ -265,11 +257,11 @@ namespace KevinCastejon.HierarchicalFiniteStateMachine.Generator
             EditorGUILayout.LabelField(currentSM.IsRoot ? "Root state machine name" : "Sub state machine name");
             if (currentSM.IsRoot)
             {
-                currentSM.Name = MakeNameUnique(EditorGUILayout.TextField(currentSM.Name).Replace(" ", "_"), false);
+                currentSM.Name = MakeNameUnique(EditorGUILayout.TextField(currentSM.Name).Replace(" ", "_"), currentSM, false);
             }
             else
             {
-                EditorGUILayout.LabelField(currentSM.Name);
+                EditorGUILayout.LabelField(GetPascalCase(currentSM.Name) + "StateMachine");
             }
             EditorGUILayout.LabelField(currentSM.IsRoot ? "Root state machine enum name" : "Sub state machine enum name");
             currentSM.EnumName = EditorGUILayout.TextField(currentSM.EnumName);
@@ -332,7 +324,7 @@ namespace KevinCastejon.HierarchicalFiniteStateMachine.Generator
                     WriteLine($"        _stateMachine.OnFixedUpdate();", _useNamespace, outfile);
                     WriteLine($"    }}", _useNamespace, outfile);
                 }
-                    WriteLine($"}}", _useNamespace, outfile);
+                WriteLine($"}}", _useNamespace, outfile);
 
                 if (_useNamespace && !string.IsNullOrEmpty(_namespace))
                 {
