@@ -6,6 +6,12 @@ Do not waste time with all the state machine mechanics anymore, just implement t
 
 You can even save more time by using the scripts generator (**Window > FSM/HFSM Generator**)
 
+[See online documentation](https://kevincastejon.github.io/Unity-StateMachines/)
+
+[Get the Unity package](https://github.com/kevincastejon/Unity-StateMachines/releases/latest)
+
+[See my other Unity packages](https://assetstore.unity.com/publishers/46935)
+
 **[Complete API Documentation](https://kevincastejon.fr/demos/Documentations/Unity-StateMachines/)**
 
 ## Usages
