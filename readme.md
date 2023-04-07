@@ -6,6 +6,8 @@ Do not waste time with all the state machine mechanics anymore, just implement t
 
 You can even save more time by using the scripts generator (**Window > FSM/HFSM Generator**)
 
+**[Complete API Documentation](https://kevincastejon.fr/demos/Documentations/Unity-StateMachines/)**
+
 ## Usages
 
 ### FSM
@@ -266,3 +268,13 @@ public class MainStateMachineComponent : MonoBehaviour
         }
     }
 ```
+
+### Generators
+
+You can use generators windows for both **FSM** and **HFSM** to generate skeleton, ready-to-implement scripts, along with some options.
+
+Open these windows via the menu ***Window > FSM/HFSM Generator***
+
+ ![Screen1](https://kevincastejon.github.io/Unity-StateMachines/Assets/KevinCastejon/StateMachines/Documentation/FSMScreen.png)
+ ![Screen2](https://kevincastejon.github.io/Unity-StateMachines/Assets/KevinCastejon/StateMachines/Documentation/HFSMScreen1.png)
+ ![Screen3](https://kevincastejon.github.io/Unity-StateMachines/Assets/KevinCastejon/StateMachines/Documentation/HFSMScreen2.png)
