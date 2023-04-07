@@ -206,7 +206,6 @@ namespace KevinCastejon.HierarchicalFiniteStateMachine.Generator
         public static void ShowWindow()
         {
             EditorWindow window = GetWindow(typeof(HierarchicalFiniteStateMachineGenerator));
-            window.minSize = new Vector2(550, 450);
             window.titleContent = new GUIContent("HFSM Generator");
         }
         public static string MakeNameUnique(string newName, StateMachineData sm, bool treatRoot = true)

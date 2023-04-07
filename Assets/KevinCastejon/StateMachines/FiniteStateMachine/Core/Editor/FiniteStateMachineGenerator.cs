@@ -127,7 +127,6 @@ namespace KevinCastejon.FiniteStateMachine.Generator
         public static void ShowWindow()
         {
             EditorWindow window = GetWindow(typeof(FiniteStateMachineGenerator));
-            window.minSize = new Vector2(550, 450);
             window.titleContent = new GUIContent("FSM Generator");
         }
         public static string MakeNameUnique(string newName, bool treatRoot = true)
