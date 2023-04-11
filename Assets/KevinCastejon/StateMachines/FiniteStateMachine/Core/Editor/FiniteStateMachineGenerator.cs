@@ -199,7 +199,7 @@ namespace KevinCastejon.FiniteStateMachine.Generator
                     WriteLine($"        {stateMachine.States[i]}" + (i == stateMachine.States.Count - 1 ? "" : ","), _useNamespace, outfile);
                 }
                 WriteLine($"    }}", _useNamespace, outfile);
-                WriteLine($"    public {stateMachine.Name}()", _useNamespace, outfile);
+                WriteLine($"    private void Awake()", _useNamespace, outfile);
                 WriteLine($"    {{", _useNamespace, outfile);
                 WriteLine($"        Init({stateMachine.EnumName}.{stateMachine.States[stateMachine.DefaultState]},", _useNamespace, outfile);
                 bool isOneSubSm = false;
