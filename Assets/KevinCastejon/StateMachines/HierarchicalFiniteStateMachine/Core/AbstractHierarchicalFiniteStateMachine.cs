@@ -6,6 +6,7 @@ namespace KevinCastejon.HierarchicalFiniteStateMachine
 {
     public abstract class AbstractState
     {
+        private MonoBehaviour _rootComponent;
         /// <summary>
         /// Constant value to use on the TransitionToState sub state machine method parameter to make it exit. You can also directly pass the -1 value.
         /// </summary>
@@ -22,6 +23,12 @@ namespace KevinCastejon.HierarchicalFiniteStateMachine
         /// The state (or subStateMachine) enum index
         /// </summary>
         public int Index { get => _index; }
+        /// <summary>
+        /// A reference to the optional MonoBehaviour component passed on the CreateRootStateMachine method call
+        /// </summary>
+        public MonoBehaviour RootComponent { get => _rootComponent; }
+
+
         /// <summary>
         /// Returns the state (or subStateMachine) enum value
         /// </summary>
@@ -51,11 +58,27 @@ namespace KevinCastejon.HierarchicalFiniteStateMachine
             newState._parentStateMachine = parentStateMachine;
             return newState;
         }
-        protected internal static T0 Create<T0>(string name) where T0 : AbstractState, new()
+        protected internal static T0 Create<T0>(string name, MonoBehaviour rootComponent = null) where T0 : AbstractHierarchicalFiniteStateMachine, new()
         {
             T0 newState = new T0();
             newState._name = name;
+            if (rootComponent)
+            {
+                newState._rootComponent = rootComponent;
+                FeedRootComponentOnHierarchy(newState, rootComponent);
+            }
             return newState;
+        }
+        private static void FeedRootComponentOnHierarchy(AbstractHierarchicalFiniteStateMachine sm, MonoBehaviour rootComponent = null)
+        {
+            foreach (AbstractState state in sm.States)
+            {
+                state._rootComponent = rootComponent;
+                if (state is AbstractHierarchicalFiniteStateMachine)
+                {
+                    FeedRootComponentOnHierarchy((AbstractHierarchicalFiniteStateMachine)state, rootComponent);
+                }
+            }
         }
         public void TransitionToState<T>(T newStateEnum) where T : struct, System.IConvertible
         {
@@ -92,15 +115,18 @@ namespace KevinCastejon.HierarchicalFiniteStateMachine
         private int _defaultState;
         private int _currentState = -1;
 
+        internal AbstractState[] States { get => _states; }
+
         /// <summary>
         /// Creates and returns a new root stateMachine
         /// </summary>
         /// <typeparam name="T0">The Enum type for this root state machine</typeparam>
         /// <param name="name">This root state machine name</param>
+        /// <param name="rootComponent">Optional reference to a MonoBehaviour component scene access and control purposes inside the StateMachines and States scripts</param>
         /// <returns>A newly created root state machine</returns>
-        public static T0 CreateRootStateMachine<T0>(string name) where T0 : AbstractState, new()
+        public static T0 CreateRootStateMachine<T0>(string name, MonoBehaviour rootComponent = null) where T0 : AbstractHierarchicalFiniteStateMachine, new()
         {
-            return Create<T0>(name);
+            return Create<T0>(name, rootComponent);
         }
         /// <summary>
         /// Initializes the state machine

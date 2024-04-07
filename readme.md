@@ -243,37 +243,106 @@ public class BStateMachine : AbstractHierarchicalFiniteStateMachine
     }
 }
 ```
-The nested state machines do not inherit from MonoBehaviour, you cannot drop the root state machine as a component on an GameObject, you have to implement a "wrapper" component for it.
+The nested state machines do not inherit from **MonoBehaviour**, you cannot drop the root state machine as a component on an **GameObject**, you have to implement a "wrapper" component for it, and call the **OnEnter**, **OnUpdate**, and **OnFixedUpdate** root statemachine's methods yourself from this component.
 
-Here is an example of wrapper component for the above example.
+You can optionally reference this component into the **StateMachine** hierarchy by passing it to the *CreateRootStateMachine* method optional second parameter, and you can access this reference from any of the stateMachines/states in the hierarchy via the **RootComponent** property (which is **MonoBehaviour** type, so you may have to cast it). That can be helpfull for accessing scene objects and components from inside the stateMachines and states scripts.
+
+Here is an example of wrapper component for the above example, plus an Animator component reference passed to the HFSM and used inside the states classes.
 
 - **MainStateMachineComponent.cs**
 ```cs
 public class MainStateMachineComponent : MonoBehaviour
+{
+    public Animator animator;
+    private MainStateMachine _stateMachine;
+    private void Awake()
     {
-        private MainStateMachine _stateMachine;
-        private void Awake()
+        // Instantiate the root state machine through the CreateRootStateMachine method, give it a debug purpose name and referencing the component
+        _stateMachine = AbstractHierarchicalFiniteStateMachine.CreateRootStateMachine<MainStateMachine>("MainStateMachine", this);
+    }
+    private void Start()
+    {
+        // Call OnEnter on your root state machine on the Start of the wrapper component
+        _stateMachine.OnEnter();
+    }
+    private void Update()
+    {
+        // Call OnUpdate on your root state machine on the Update of the wrapper component
+        _stateMachine.OnUpdate();
+    }
+    // Do the same for FixedUpdate if you need to
+    private void FixedUpdate()
+    {
+        // Call OnFixedUpdate on your root state machine on the FixedUpdate of the wrapper component
+        _stateMachine.OnFixedUpdate();
+    }
+}
+```
+- **MainStateMachine.cs**
+```cs
+public class MainStateMachine : AbstractHierarchicalFiniteStateMachine
+{
+    // Declaring the state machine states Enum
+    public enum MainState
+    {
+        A,
+        B,
+        C
+    }
+    public MainStateMachine()
+    {
+        // Initializes the state machine with the default state enum, then all the states (order does not matter)
+        Init(MainState.A,
+            Create<AState, MainState>(MainState.A, this),
+            Create<BStateMachine, MainState>(MainState.B, this),
+            Create<CState, MainState>(MainState.C, this)
+        );
+    }
+    // Will be called when exiting from a sub state machine
+    // If you do not override this method, the base one will trigger a transition to the default state
+    // Be aware that if you do override this method and do not make a transition happen then your state machine will be stuck
+    public override void OnExitFromSubStateMachine(AbstractHierarchicalFiniteStateMachine subStateMachine)
+    {
+        TransitionToState(MainState.C);
+    }
+    // Declaring the simple states (that are not a sub state machine)
+    public class AState : AbstractState
+    {
+        public override void OnEnter()
         {
-            // Instantiate the root state machine through the CreateRootStateMachine method and give it a debug purpose name
-            _stateMachine = AbstractHierarchicalFiniteStateMachine.CreateRootStateMachine<MainStateMachine>("MainStateMachine");
+            // Operating the Animator via the root wrapper component
+            (RootComponent as MainStateMachineComponent).animator.SetTrigger("myAnimatorParameter");
         }
-        private void Start()
+        public override void OnUpdate()
         {
-            // Call OnEnter on your root state machine on the Start of the wrapper component
-            _stateMachine.OnEnter();
+            if (Input.anyKeyDown)
+            {
+                TransitionToState(MainState.B);
+            }
         }
-        private void Update()
+        public override void OnExit()
         {
-            // Call OnUpdate on your root state machine on the Update of the wrapper component
-            _stateMachine.OnUpdate();
-        }
-        // Do the same for FixedUpdate if you need to
-        private void FixedUpdate()
-        {
-            // Call OnFixedUpdate on your root state machine on the FixedUpdate of the wrapper component
-            _stateMachine.OnFixedUpdate();
         }
     }
+    public class CState : AbstractState
+    {
+        public override void OnEnter()
+        {
+            // Operating the Animator via the root wrapper component
+            (RootComponent as MainStateMachineComponent).animator.SetTrigger("myOtherAnimatorParameter");
+        }
+        public override void OnUpdate()
+        {
+            if (Input.anyKeyDown)
+            {
+                TransitionToState(MainState.A);
+            }
+        }
+        public override void OnExit()
+        {
+        }
+    }
+}
 ```
 
 ### Generators

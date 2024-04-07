@@ -6,10 +6,11 @@ namespace KevinCastejon.HierarchicalFiniteStateMachineDemos.TicTacToeDemo
 {
     public class MainStateMachineComponent : MonoBehaviour
     {
+        public GameManager gameManager;
         private MainStateMachine _sm;
         private void Awake()
         {
-            _sm = AbstractHierarchicalFiniteStateMachine.CreateRootStateMachine<MainStateMachine>("MainStateMachine");
+            _sm = AbstractHierarchicalFiniteStateMachine.CreateRootStateMachine<MainStateMachine>("MainStateMachine", this);
         }
         private void Start()
         {

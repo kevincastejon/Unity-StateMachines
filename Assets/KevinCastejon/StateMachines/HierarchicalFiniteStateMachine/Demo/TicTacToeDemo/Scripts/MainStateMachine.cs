@@ -6,7 +6,6 @@ namespace KevinCastejon.HierarchicalFiniteStateMachineDemos.TicTacToeDemo
 {
     public class MainStateMachine : AbstractHierarchicalFiniteStateMachine
     {
-        public GameManager Manager { get; set; }
         public enum MainState
         {
             MENU,
@@ -20,7 +19,6 @@ namespace KevinCastejon.HierarchicalFiniteStateMachineDemos.TicTacToeDemo
                 Create<GameStateMachine, MainState>(MainState.GAME, this),
                 Create<EndState, MainState>(MainState.END, this)
             );
-            Manager = Object.FindObjectOfType<GameManager>();
         }
 
         public override void OnExitFromSubStateMachine(AbstractHierarchicalFiniteStateMachine subStateMachine)
@@ -28,12 +26,12 @@ namespace KevinCastejon.HierarchicalFiniteStateMachineDemos.TicTacToeDemo
             TransitionToState(MainState.END);
         }
         
-        public class MenuState : AbstractState
+        public class MenuState : AbstractState 
         {
             public override void OnEnter()
             {
-                GetStateMachine<MainStateMachine>().Manager.ResetGame();
-                GetStateMachine<MainStateMachine>().Manager.ShowStartPanel();
+                (RootComponent as MainStateMachineComponent).gameManager.ResetGame();
+                (RootComponent as MainStateMachineComponent).gameManager.ShowStartPanel();
             }
 
             public override void OnUpdate()
@@ -47,7 +45,7 @@ namespace KevinCastejon.HierarchicalFiniteStateMachineDemos.TicTacToeDemo
 
             public override void OnExit()
             {
-                GetStateMachine<MainStateMachine>().Manager.HideStartPanel();
+                (RootComponent as MainStateMachineComponent).gameManager.HideStartPanel();
             }
         }
 
@@ -55,15 +53,15 @@ namespace KevinCastejon.HierarchicalFiniteStateMachineDemos.TicTacToeDemo
         {
             public override void OnEnter()
             {
-                GetStateMachine<MainStateMachine>().Manager.HideCurrentPlayerPanel();
-                GetStateMachine<MainStateMachine>().Manager.ShowBackPanel();
-                if (GetStateMachine<MainStateMachine>().Manager.IsAnyWinner)
+                (RootComponent as MainStateMachineComponent).gameManager.HideCurrentPlayerPanel();
+                (RootComponent as MainStateMachineComponent).gameManager.ShowBackPanel();
+                if ((RootComponent as MainStateMachineComponent).gameManager.IsAnyWinner)
                 {
-                    GetStateMachine<MainStateMachine>().Manager.ShowVictory();
+                    (RootComponent as MainStateMachineComponent).gameManager.ShowVictory();
                 }
                 else
                 {
-                    GetStateMachine<MainStateMachine>().Manager.ShowDraw();
+                    (RootComponent as MainStateMachineComponent).gameManager.ShowDraw();
                 }
             }
 
@@ -78,7 +76,7 @@ namespace KevinCastejon.HierarchicalFiniteStateMachineDemos.TicTacToeDemo
 
             public override void OnExit()
             {
-                GetStateMachine<MainStateMachine>().Manager.HideBackPanel();
+                (RootComponent as MainStateMachineComponent).gameManager.HideBackPanel();
             }
         }
     }

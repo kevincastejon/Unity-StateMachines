@@ -306,7 +306,7 @@ namespace KevinCastejon.HierarchicalFiniteStateMachine.Generator
                 WriteLine($"    private {root.Name} _stateMachine;", _useNamespace, outfile);
                 WriteLine($"    private void Awake()", _useNamespace, outfile);
                 WriteLine($"    {{", _useNamespace, outfile);
-                WriteLine($"        _stateMachine = AbstractHierarchicalFiniteStateMachine.CreateRootStateMachine<{root.Name}>(\"{root.Name}\");", _useNamespace, outfile);
+                WriteLine($"        _stateMachine = AbstractHierarchicalFiniteStateMachine.CreateRootStateMachine<{root.Name}>(\"{root.Name}\", this);", _useNamespace, outfile);
                 WriteLine($"    }}", _useNamespace, outfile);
                 WriteLine($"    private void Start()", _useNamespace, outfile);
                 WriteLine($"    {{", _useNamespace, outfile);

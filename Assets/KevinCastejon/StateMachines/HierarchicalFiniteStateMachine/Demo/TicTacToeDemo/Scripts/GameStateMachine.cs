@@ -6,7 +6,6 @@ namespace KevinCastejon.HierarchicalFiniteStateMachineDemos.TicTacToeDemo
 {
     public class GameStateMachine : AbstractHierarchicalFiniteStateMachine
     {
-        public GameManager Manager { get; set; }
         public enum GameState
         {
             SWITCHING_PLAYER,
@@ -20,22 +19,21 @@ namespace KevinCastejon.HierarchicalFiniteStateMachineDemos.TicTacToeDemo
                 Create<PickingState, GameState>(GameState.PICKING_TILE, this),
                 Create<CheckingState, GameState>(GameState.CHECKING_VICTORY, this)
             );
-            Manager = Object.FindObjectOfType<GameManager>();
         }
         public override void OnStateMachineEntry()
         {
-            Manager.ResetGame();
-            Manager.ShowBoard();
+            (RootComponent as MainStateMachineComponent).gameManager.ResetGame();
+            (RootComponent as MainStateMachineComponent).gameManager.ShowBoard();
         }
         public override void OnStateMachineExit()
         {
-            Manager.HideBoard();
+            (RootComponent as MainStateMachineComponent).gameManager.HideBoard();
         }
         public class SwitchingState : AbstractState
         {
             public override void OnEnter()
             {
-                GetStateMachine<GameStateMachine>().Manager.SwitchPlayer();
+                (RootComponent as MainStateMachineComponent).gameManager.SwitchPlayer();
             }
 
             public override void OnUpdate()
@@ -62,7 +60,7 @@ namespace KevinCastejon.HierarchicalFiniteStateMachineDemos.TicTacToeDemo
 
             public override void OnUpdate()
             {
-                if (GetStateMachine<GameStateMachine>().Manager.DetectTileClick())
+                if ((RootComponent as MainStateMachineComponent).gameManager.DetectTileClick())
                 {
                     TransitionToState(GameState.CHECKING_VICTORY);
                     return;
@@ -82,14 +80,14 @@ namespace KevinCastejon.HierarchicalFiniteStateMachineDemos.TicTacToeDemo
         {
             public override void OnEnter()
             {
-                if (GetStateMachine<GameStateMachine>().Manager.IsVictory() || !GetStateMachine<GameStateMachine>().Manager.IsMoveLeft)
+                if ((RootComponent as MainStateMachineComponent).gameManager.IsVictory() || !(RootComponent as MainStateMachineComponent).gameManager.IsMoveLeft)
                 {
-                    GetStateMachine<GameStateMachine>().TransitionToState(EXIT);
+                    TransitionToState(EXIT);
                     return;
                 }
                 else
                 {
-                    GetStateMachine<GameStateMachine>().TransitionToState(GameState.SWITCHING_PLAYER);
+                    TransitionToState(GameState.SWITCHING_PLAYER);
                     return;
                 }
             }
