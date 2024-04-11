@@ -122,7 +122,7 @@ namespace KevinCastejon.HierarchicalFiniteStateMachine
         /// </summary>
         /// <typeparam name="T0">The Enum type for this root state machine</typeparam>
         /// <param name="name">This root state machine name</param>
-        /// <param name="rootComponent">Optional reference to a MonoBehaviour component scene access and control purposes inside the StateMachines and States scripts</param>
+        /// <param name="rootComponent">Optional reference to a MonoBehaviour component for scene access and control purposes inside the StateMachines and States scripts</param>
         /// <returns>A newly created root state machine</returns>
         public static T0 CreateRootStateMachine<T0>(string name, MonoBehaviour rootComponent = null) where T0 : AbstractHierarchicalFiniteStateMachine, new()
         {
